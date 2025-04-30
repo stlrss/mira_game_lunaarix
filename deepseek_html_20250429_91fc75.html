@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>✨ Поймай Миру! ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* Основные стили */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #ffc0cb url('https://i.pinimg.com/originals/dc/b5/35/dcb5359f7f44de44f7aac5b6a7e47922.gif');
+            color: #db0092;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3em;
+            color: #ff0099;
+            text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ff99cc;
+            margin: 20px 0;
+            background: linear-gradient(to right, #ff66b2, #ff99cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        /* Контейнер с колонками */
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Боковые колонки с фото */
+        .side-column {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-top: 50px;
+        }
+
+        .photo-frame {
+            background: white;
+            border: 5px solid white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(255,0,127,0.3);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .photo-frame:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .photo-caption {
+            background: linear-gradient(to right, #ff66cc, #ff0099);
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        /* Описание игры */
+        .game-description {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.2);
+            font-family: 'Montserrat', sans-serif;
+            color: #5a0037;
+            line-height: 1.6;
+            text-align: left;
+            position: relative;
+            border: 2px dashed #ff66cc;
+        }
+
+        .game-description h2 {
+            font-family: 'Pacifico', cursive;
+            color: #ff0099;
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .game-description .highlight {
+            color: #ff0066;
+            font-weight: bold;
+        }
+
+        /* Игровое поле */
+        #gameContainer {
+            width: 500px;
+            height: 500px;
+            margin: 20px auto;
+            border: 10px solid white;
+            border-radius: 15px;
+            box-shadow: 0 0 0 5px hotpink, 0 0 30px rgba(255,0,127,0.5);
+            background: url('https://files.catbox.moe/fwn1io.avif') center/cover;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #mira {
+            width: 120px;
+            height: 120px;
+            background: url('https://files.catbox.moe/8atyau.png') center/cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            transition: transform 0.3s ease-out;
+        }
+
+        /* Элементы интерфейса */
+        #score {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px;
+            color: #ff0066;
+            text-shadow: 1px 1px 0 #fff;
+        }
+        
+        #timer {
+            font-size: 1.5em;
+            color: #ff0099;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px auto;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1em;
+            font-weight: bold;
+            background: linear-gradient(to bottom, #ff66cc, #ff0099);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 5px 0 #cc0066, 0 10px 20px rgba(255,0,127,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #cc0066, 0 5px 10px rgba(255,0,127,0.3);
+        }
+
+        /* Эффекты */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff66cc;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-up 1s ease-out forwards;
+        }
+        
+        @keyframes float-up {
+            to { transform: translateY(-50px) rotate(360deg); opacity: 0; }
+        }
+        
+        .celebrate {
+            animation: celebrate 0.5s ease-in-out 3;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Подпись */
+        .signature {
+            margin: 30px;
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5em;
+            color: #ff0099;
+            text-shadow: 1px 1px 0 #fff;
+        }
+
+        /* Адаптация */
+        @media (max-width: 1200px) {
+            .side-column {
+                display: none;
+            }
+        }
+        
+        /* Улучшенный плеер */
+        #musicPlayer {
+            margin: 30px auto;
+            width: 350px;
+            padding: 20px;
+            background: linear-gradient(to right, #ff66cc, #ff0099);
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255,0,127,0.3);
+        }
+        
+        #songInfo {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+        
+        #playerControls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        #playerBtn {
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px 20px;
+        }
+        
+        .playlist {
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+        
+        .song {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .song:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .song.active {
+            background: rgba(255,255,255,0.4);
+            font-weight: bold;
+        }
+        
+        /* Сердечки */
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 5s ease-in-out infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(20deg); }
+        }
+        
+        /* Полоса прокрутки */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>✨ Поймай Миру! ✨</h1>
+    
+    <div class="container">
+        <!-- Левая колонка -->
+        <div class="side-column">
+            <div class="photo-frame">
+                <img src="https://i.pinimg.com/736x/64/10/d8/6410d871e60aabf5dc18cfb829b143ef.jpg" alt="Слава и Мира">
+                <div class="photo-caption">Слава и Мира</div>
+            </div>
+            <div class="photo-frame">
+                <img src="https://files.catbox.moe/a3ystt.jpg" alt="Мира играет">
+                <div class="photo-caption">Сидят в машине</div>
+            </div>
+        </div>
+        
+        <!-- Центральная часть -->
+        <div>
+            <div class="game-description">
+                <h2>🐶 Помоги Славе вернуть Миру! 🐾</h2>
+                <p>О нет! <span class="highlight">Мира</span>, любимый мопс Славы, убежала и теперь резвится в парке. Она такая быстрая и ловкая — попробуй поймать её, пока она не натворила бед!</p>
+                
+                <div class="game-rules">
+                    <p><strong>Как играть:</strong></p>
+                    <ul>
+                        <li>🔹 Нажми <span class="highlight">"Начать игру"</span> — у тебя 30 секунд</li>
+                        <li>🔹 Кликай на Миру — за каждое попадание +1 очко</li>
+                        <li>🔹 Чем больше очков — тем быстрее убегает Мира!</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="score">Счет: 0</div>
+            <div id="timer">Время: 30</div>
+            
+            <div id="gameContainer">
+                <div id="mira"></div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn">Начать игру</button>
+                <button id="resetBtn">Сбросить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="musicPlayer">
+        <div id="songInfo">Выберите трек</div>
+        <div id="playerControls">
+            <button id="prevBtn">⏮</button>
+            <button id="playerBtn">▶️</button>
+            <button id="nextBtn">⏭</button>
+        </div>
+        
+        <div class="playlist">
+            <div class="song" data-index="0">Слава КПСС - Кайфоград</div>
+            <div class="song" data-index="1">Слава КПСС - Мне стыдно жить</div>
+            <div class="song" data-index="2">Gone.Fludd - Плохая сука</div>
+            <div class="song" data-index="3">Lida - Дубай</div>
+            <div class="song" data-index="4">uniqe, nkeeei, ARTEM SHILOVETS - ГЛАМУР</div>
+            <div class="song" data-index="5">Кровосток - Амфибия</div>
+            <div class="song" data-index="6">Pharaoh - Дико, например</div>
+            <div class="song" data-index="7">Serani Poji - ぴぽぴぽ</div>
+            <div class="song" data-index="8">Пошлая Молли - Нон Стоп</div>
+            <div class="song" data-index="9">From "Talking Friends" - You Get Me</div>
+        </div>
+    </div>
+    
+    <audio id="bgMusic"></audio>
+    
+    <div class="signature">
+        made by lunaarix
+    </div>
+
+    <script>
+        // ========== МУЗЫКАЛЬНЫЙ ПЛЕЕР ==========
+        const musicPlayer = {
+            audio: document.getElementById("bgMusic"),
+            currentSong: 0,
+            isPlaying: false,
+            songs: [
+                { url: "https://files.catbox.moe/fg8sz6.mp3", title: "Слава КПСС - Кайфоград" },
+                { url: "https://files.catbox.moe/3afh0v.mp3", title: "Слава КПСС - Мне стыдно жить" },
+                { url: "https://files.catbox.moe/dxfjsk.mp3", title: "Gone.Fludd - Плохая сука" },
+                { url: "https://files.catbox.moe/28749e.mp3", title: "Lida - Дубай" },
+                { url: "https://files.catbox.moe/w9g22q.mp3", title: "uniqe, nkeeei, ARTEM SHILOVETS - ГЛАМУР" },
+                { url: "https://files.catbox.moe/zfnoe3.mp3", title: "Кровосток - Амфибия" },
+                { url: "https://files.catbox.moe/jv90t8.mp3", title: "Pharaoh - Дико, например" },
+                { url: "https://files.catbox.moe/xlebec.mp3", title: "Serani Poji - ぴぽぴぽ" },
+                { url: "https://files.catbox.moe/vyvtr4.mp3", title: "Пошлая Молли - Нон Стоп" },
+                { url: "https://files.catbox.moe/09t8q8.mp3", title: "From \"Talking Friends\" - You Get Me" }
+            ],
+            
+            init() {
+                this.elements = {
+                    songInfo: document.getElementById("songInfo"),
+                    playerBtn: document.getElementById("playerBtn"),
+                    prevBtn: document.getElementById("prevBtn"),
+                    nextBtn: document.getElementById("nextBtn"),
+                    songs: document.querySelectorAll(".song")
+                };
+                
+                this.loadSong(this.currentSong);
+                this.setupEventListeners();
+            },
+            
+            loadSong(index) {
+                this.currentSong = index;
+                this.audio.src = this.songs[index].url;
+                this.elements.songInfo.textContent = this.songs[index].title;
+                this.updateActiveSong();
+                
+                if (this.isPlaying) {
+                    this.audio.play().catch(e => console.log("Ошибка воспроизведения:", e));
+                }
+            },
+            
+            setupEventListeners() {
+                this.audio.addEventListener('ended', () => this.nextSong());
+                
+                this.elements.playerBtn.addEventListener('click', () => this.togglePlay());
+                this.elements.prevBtn.addEventListener('click', () => this.prevSong());
+                this.elements.nextBtn.addEventListener('click', () => this.nextSong());
+                
+                this.elements.songs.forEach(song => {
+                    song.addEventListener('click', () => {
+                        this.playSong(parseInt(song.getAttribute('data-index')));
+                    });
+                });
+                
+                // Обработка автовоспроизведения
+                const tryAutoplay = () => {
+                    if (!this.isPlaying) {
+                        this.audio.play()
+                            .then(() => {
+                                this.isPlaying = true;
+                                this.elements.playerBtn.textContent = "⏸";
+                            })
+                            .catch(e => console.log("Автовоспроизведение заблокировано"));
+                    }
+                };
+                
+                // Пробуем автовоспроизведение при любом клике
+                document.addEventListener('click', tryAutoplay, { once: true });
+            },
+            
+            playSong(index) {
+                this.loadSong(index);
+                if (!this.isPlaying) this.togglePlay();
+            },
+            
+            prevSong() {
+                let newIndex = (this.currentSong - 1 + this.songs.length) % this.songs.length;
+                this.loadSong(newIndex);
+            },
+            
+            nextSong() {
+                let newIndex = (this.currentSong + 1) % this.songs.length;
+                this.loadSong(newIndex);
+            },
+            
+            togglePlay() {
+                if (this.isPlaying) {
+                    this.audio.pause();
+                    this.elements.playerBtn.textContent = "▶️";
+                } else {
+                    this.audio.play()
+                        .then(() => {
+                            this.elements.playerBtn.textContent = "⏸";
+                        })
+                        .catch(e => console.log("Ошибка воспроизведения:", e));
+                }
+                this.isPlaying = !this.isPlaying;
+            },
+            
+            updateActiveSong() {
+                this.elements.songs.forEach((song, index) => {
+                    song.classList.toggle("active", index === this.currentSong);
+                });
+            }
+        };
+
+        // ========== ИГРА ==========
+        const game = {
+            mira: document.getElementById("mira"),
+            gameContainer: document.getElementById("gameContainer"),
+            scoreElement: document.getElementById("score"),
+            timerElement: document.getElementById("timer"),
+            startBtn: document.getElementById("startBtn"),
+            resetBtn: document.getElementById("resetBtn"),
+            score: 0,
+            timeLeft: 30,
+            gameInterval: null,
+            timerInterval: null,
+            isRunning: false,
+            speed: 1500,
+            minSpeed: 300,
+            
+            init() {
+                this.setupEventListeners();
+            },
+            
+            setupEventListeners() {
+                this.mira.addEventListener("click", (e) => this.handleMiraClick(e));
+                this.startBtn.addEventListener("click", () => this.startGame());
+                this.resetBtn.addEventListener("click", () => this.resetGame());
+            },
+            
+            moveMira() {
+                if (!this.isRunning) return;
+                
+                const containerWidth = this.gameContainer.offsetWidth;
+                const containerHeight = this.gameContainer.offsetHeight;
+                const x = Math.random() * (containerWidth - this.mira.offsetWidth);
+                const y = Math.random() * (containerHeight - this.mira.offsetHeight);
+                
+                this.mira.style.transition = `transform ${this.speed/1000}s ease-out`;
+                this.mira.style.transform = `translate(${x}px, ${y}px) rotate(${Math.random() * 20 - 10}deg)`;
+                
+                if (this.speed > this.minSpeed) this.speed -= 10;
+            },
+            
+            createParticles(x, y) {
+                for (let i = 0; i < 10; i++) {
+                    const particle = document.createElement("div");
+                    particle.className = "particle";
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    particle.style.background = `hsl(${Math.random() * 60 + 300}, 100%, 70%)`;
+                    particle.style.width = `${Math.random() * 10 + 5}px`;
+                    particle.style.height = particle.style.width;
+                    this.gameContainer.appendChild(particle);
+                    
+                    setTimeout(() => particle.remove(), 1000);
+                }
+            },
+            
+            handleMiraClick(e) {
+                if (!this.isRunning) return;
+                
+                const rect = this.gameContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.score++;
+                this.scoreElement.textContent = `Счет: ${this.score}`;
+                this.createParticles(x, y);
+                
+                this.mira.style.transition = "transform 0.1s";
+                this.mira.style.transform = "scale(0.9)";
+                setTimeout(() => {
+                    this.mira.style.transform = "scale(1)";
+                    this.moveMira();
+                }, 100);
+            },
+            
+            updateTimer() {
+                this.timeLeft--;
+                this.timerElement.textContent = `Время: ${this.timeLeft}`;
+                if (this.timeLeft <= 0) this.endGame();
+            },
+            
+            startGame() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.score = 0;
+                this.timeLeft = 30;
+                this.speed = 1500;
+                
+                this.scoreElement.textContent = `Счет: ${this.score}`;
+                this.timerElement.textContent = `Время: ${this.timeLeft}`;
+                
+                this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+                this.gameInterval = setInterval(() => this.moveMira(), this.speed);
+                this.moveMira();
+            },
+            
+            endGame() {
+                clearInterval(this.gameInterval);
+                clearInterval(this.timerInterval);
+                this.isRunning = false;
+                
+                this.mira.style.transition = "transform 0.5s";
+                this.mira.style.transform = "translate(calc(50% - 60px), calc(50% - 60px)) scale(1.5)";
+                
+                setTimeout(() => alert(`Игра окончена! Ваш счет: ${this.score}`), 500);
+            },
+            
+            resetGame() {
+                clearInterval(this.gameInterval);
+                clearInterval(this.timerInterval);
+                this.isRunning = false;
+                this.score = 0;
+                this.timeLeft = 30;
+                this.speed = 1500;
+                
+                this.scoreElement.textContent = `Счет: ${this.score}`;
+                this.timerElement.textContent = `Время: ${this.timeLeft}`;
+                this.mira.style.transition = "transform 0.5s";
+                this.mira.style.transform = "translate(0, 0)";
+            }
+        };
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            musicPlayer.init();
+            game.init();
+        });
+    </script>
+</body>
+</html>
